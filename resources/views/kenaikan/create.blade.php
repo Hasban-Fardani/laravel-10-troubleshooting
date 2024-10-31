@@ -24,8 +24,9 @@
         <form action="{{ route('kenaikan.store') }}" method="POST">
             @csrf
             <div class="form-group">
-                <label for="id_siswa">ID Siswa</label>
-                <select value="id_siswa" name="id_siswa" class="form-control">
+                <label for="id_siswa">Siswa</label>
+                <select value="id_siswa" name="id_siswa" class="form-control" id="input-nama">
+                    <option selected hidden>Pilih siswa</option>
                     @foreach ($siswa as $s)
                         <option value="{{ $s->id }}">{{ $s->id }} - {{ $s->nama }}</option>
                     @endforeach
@@ -44,11 +45,8 @@
             </div>
             <div class="form-group">
                 <label for="kelas_asal">Kelas Asal</label>
-                <select name="kelas_asal" id="kelas_asal" class="form-control">
-                    @foreach ($kelas as $k)
-                        <option value="{{ $k->id }}">{{ $k->nama_kelas }}</option>
-                    @endforeach
-                </select>
+                <input type="text" value="" id="nama_kelas_asal" class="form-control">
+                <input type="text" class="form-control" id="kelas_asal" name="kelas_asal" hidden>
             </div>
             <div class="form-group">
                 <label for="kelas_tujuan">Kelas Tujuan</label>
@@ -78,6 +76,22 @@
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        const input = document.getElementById('input-nama');
+
+        input.addEventListener('change', updateValue);
+
+        function updateValue(event) {
+        console.log(event.target.value)
+            // fetch to /kenaikan/search?search={input.value}
+            fetch('/kenaikan/get-kelas-asal?id_siswa=' + event.target.value)
+                .then(response => response.json())
+                .then(res => {
+                    document.getElementById('nama_kelas_asal').value = res.nama_kelas;
+                    document.getElementById('kelas_asal').value = res.id_kelas;
+                });
+        }
+    </script>
 </body>
 
 </html>

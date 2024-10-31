@@ -27,13 +27,44 @@
                 class="btn btn-success mb-3">Export</a>
             <a href="{{ route('dashboard') }}" class="btn btn-secondary mb-3">Kembali</a>
         </div>
-        <form method="GET" action="{{ route('kenaikan.index') }}" class="mb-3">
-            <select name="naik_kelas" class="form-control" onchange="this.form.submit()">
-                <option value="all" selected>Semua</option>
-                <option value="1" {{ request('naik_kelas') == '1' ? 'selected' : '' }}>Naik Kelas</option>
-                <option value="0" {{ request('naik_kelas') == '0' ? 'selected' : '' }}>Tidak Naik Kelas</option>
-            </select>
-        </form>
+
+        <div class="d-flex w-full justify-content-between">
+            <form method="GET" action="{{ route('kenaikan.index', ['kelas_asal' => $kelas_asal, 'kelas_tujuan' => $kelas_tujuan]) }}"
+                class="mb-3">
+                <input type="text" name="kelas_asal" value="{{$kelas_asal}}" hidden>
+                <input type="text" name="kelas_tujuan" value="{{$kelas_tujuan}}" hidden>
+                <label for="naik_kelas">Status</label>
+                <select name="naik_kelas" class="form-control w-full" onchange="this.form.submit()">
+                    <option value="all" selected>Semua</option>
+                    <option value="1" {{ request('naik_kelas') == '1' ? 'selected' : '' }}>Naik Kelas</option>
+                    <option value="0" {{ request('naik_kelas') == '0' ? 'selected' : '' }}>Tidak Naik Kelas</option>
+                </select>
+            </form>
+            <form method="GET" action="{{ route('kenaikan.index', ['kelas_asal' => $kelas_asal, 'kelas_tujuan' => $kelas_tujuan]) }}"
+                class="mb-3">
+                <input type="text" name="kelas_tujuan" value="{{$kelas_tujuan}}" hidden>
+                <input type="text" name="naik_kelas" value="{{$naik_kelas}}" hidden>
+                <label for="kelas_asal">Kelas Asal</label>
+                <select name="kelas_asal" class="form-control w-full" onchange="this.form.submit()">
+                    <option value="all">Kelas Asal</option>
+                    @foreach ($kelas as $k)
+                        <option value="{{ $k->id }}" @selected($k->id == request('kelas_asal'))>{{ $k->nama_kelas }}</option>
+                    @endforeach
+                </select>
+            </form>
+            <form method="GET" action="{{ route('kenaikan.index', ['kelas_asal' => $kelas_asal, 'kelas_tujuan' => $kelas_tujuan]) }}"
+                class="mb-3">
+                <input type="text" name="naik_kelas" value="{{$naik_kelas}}" hidden>
+                <input type="text" name="kelas_asal" value="{{$kelas_asal}}" hidden>
+                <label for="kelas_tujuan">Kelas Tujuan</label>
+                <select name="kelas_tujuan" class="form-control w-full" onchange="this.form.submit()">
+                    <option value="all">Kelas Tujuan</option>
+                    @foreach ($kelas as $k)
+                        <option value="{{ $k->id }}" @selected($k->id == request('kelas_tujuan'))>{{ $k->nama_kelas }}</option>
+                    @endforeach
+                </select>
+            </form>
+        </div>
 
         <!-- Pencarian Kenaikan -->
         <form method="GET" action="{{ route('kenaikan.index') }}" class="mb-3">
@@ -73,6 +104,7 @@
                     </tr>
                 @endforeach
             </tbody>
+            {{ $kenaikan->links() }}
         </table>
     </div>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>

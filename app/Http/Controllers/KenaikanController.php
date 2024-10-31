@@ -17,13 +17,28 @@ class KenaikanController extends Controller
     {
         $naik_kelas = $request->input('naik_kelas', 'all');
         $kenaikan = Kenaikan::with(['siswa', 'kelasAsal', 'kelasTujuan']);
+        $kelas_asal = $request->input('kelas_asal', null);
+        $kelas_tujuan = $request->input('kelas_tujuan', null);
 
         $kenaikan->when($naik_kelas !== 'all', function ($query) use ($naik_kelas) {
             $query->where('naik_kelas', $naik_kelas);
         });
 
-        $kenaikan = $kenaikan->get();
-        return view('kenaikan.index', compact('kenaikan', 'naik_kelas'));
+        $kenaikan->when($kelas_asal !== 'all' && $kelas_asal != null, function ($query) use ($kelas_asal) {
+            $query->whereHas('kelasAsal', function ($query) use ($kelas_asal) {
+                $query->where('id', $kelas_asal);
+            });
+        }); 
+
+        $kenaikan->when($kelas_tujuan !== 'all' && $kelas_tujuan != null, function ($query) use ($kelas_tujuan) {
+            $query->whereHas('kelasTujuan', function ($query) use ($kelas_tujuan) {
+                $query->where('id', $kelas_tujuan);
+            });
+        }); 
+
+        $kenaikan = $kenaikan->paginate();
+        $kelas = Kelas::all();
+        return view('kenaikan.index', compact('kenaikan', 'naik_kelas', 'kelas', 'kelas_asal', 'kelas_tujuan'));
     }
 
     public function create()
@@ -118,5 +133,23 @@ class KenaikanController extends Controller
         $kenaikan = $kenaikan->get();
         $kelas = Kelas::all();
         return view('kenaikan.table', compact('kenaikan', 'kelas'));
+    }
+
+    public function getKelasAsal(Request $request)
+    {
+        if (!$request->id_siswa)
+        {
+            return response()->json([
+                'nama_kelas' => '',
+                'id_kelas' => '',
+            ]);
+        }
+
+        $siswa = Siswa::where('id', $request->id_siswa)->first();
+        $kelas = $siswa->load('kelas')->kelas;
+        return response()->json([
+            'nama_kelas' => $kelas->nama_kelas,
+            'id_kelas' => $kelas->id,
+        ]);
     }
 }

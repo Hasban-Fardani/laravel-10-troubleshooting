@@ -43,20 +43,13 @@ Route::middleware('auth')->group(function () {
     // Route untuk Siswa, Kelas, dan Kenaikan
     Route::resource('siswa', SiswaController::class);
 
+    Route::get('kenaikan/get-kelas-asal', [KenaikanController::class, 'getKelasAsal'])->name('kenaikan.get-kelas-asal');
     Route::get('kenaikan/search', [KenaikanController::class, 'search'])->name('kenaikan.search');
     Route::get('kenaikan/export', [KenaikanController::class, 'export'])->name('kenaikan.export');
     Route::post('kenaikan/import', [KenaikanController::class, 'import'])->name('kenaikan.import');
     Route::resource('kenaikan', KenaikanController::class);
     Route::resource('kelas', KelasController::class);
-
-    //Route::get('/siswa/export', [SiswaController::class, 'export'])->name('siswa.export'); // Pastikan ini ada
-    //Route::get('/siswa/export', [SiswaController::class, 'export'])->name('siswa.export');
-
 });
-
-
-// No need to define the kelas resource again, it's already defined above
-// Remove the duplicate definition
 
 // Memuat route authentication
 require __DIR__.'/auth.php';
